@@ -1,0 +1,23 @@
+spring:
+  profiles:
+    active: @profile@
+
+  ## 连接池配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5    #初始化大小
+    minIdle: 5        #最小连接数
+    maxActive: 20     #最大连接数
+    maxWait: 60000    #获取连接等待超时时间
+
+  mvc:
+    static-path-pattern: /**
+
+
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    log-prefix: MybatisSqlSlf4jLog.
