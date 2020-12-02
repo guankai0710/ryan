@@ -1,0 +1,63 @@
+==================================================================
+用过IDEA后真是太香了！！！这里就说一些IDEA的一些常用的配置，参考一下。
+==================================================================
+
+
+IDEA必备插件：
+
+1、Alibaba Java Coding Guidelines （阿里代码规约检查）
+2、SonarLint（代码检查）
+3、translation（翻译插件）
+4、Free Mybatis plugin （mybatis插件，可直接从mapper跳转到对应的sql语句）
+5、Mybatis Log plugin（mybatis插件，可直接打印完整sql语句，好像要收费了。。。）
+6、RestfulToolkit（可检索项目中所有Restful接口，很是方便） ps：idea2020版及以上这个插件不能使用，可用 RestfulTool 这个插件代替，效果一样
+7、Lombok（可省略实体类的一些代码编写，如：set、get方法；个人感觉侵入性太强，而且代码跟踪不便，如果不是项目要求使用，个人不建议使用）
+
+
+
+===========================================================================================================================================================
+
+IDEA提高开发效率的配置：
+
+1、配置自定义类注释
+    打开file > settings > Editor > File and Code Templates
+    在Class、Interface、Enum、AnnotationType模板类上面添加如下模板
+    /**
+     * TODO
+     *
+     * @author 开发者名字
+     * @date ${DATE}
+     **/
+    public class ${NAME} {
+    }
+
+2、配置自定义方法注释
+    打开file > settings > Editor > Live Templates
+    点击右侧+号>tempalte group...添加一个自定义模板组
+    选中刚添加的模板组，点击右侧+号>live tempalte添加自定义模板
+    下方 Abbreviation 自定义触发注释的快捷键 如：aa（简单点，不要与idea快捷键重复）
+    	Description 描述这个模板干嘛的，可填可不填
+    	Tempalte text 填如下模板（格式绝对不要错！！！）：
+
+    	**
+    	 * TODO
+    	 * $end$
+    	 $params$
+    	 * @author 开发者名字
+    	 * @date $date$
+    	 * @return $return$
+    	 **/
+
+    	Define勾选Java
+    点击 Edit variables
+    	date对应的Expression选择 date()，
+    	return对应的Expression选择 methodReturnType()，
+    	params对应的Expression填入  groovyScript("def result=''; def params=\"${_1}\".replaceAll('[\\\\[|\\\\]|\\\\s]', '').split(',').toList(); result+='* @param ' + params[0] + '\\n';for(i = 1; i < params.size(); i++) {result+=' * @param ' + params[i] + ((i < params.size() - 1) ? '\\n' : '')}; return result", methodParameters())
+
+    Options > Expand with 选择Enter（这是触发建，根据个人习惯选择吧），最后保存就ok了。
+    测试一下，在方法上输入 /aa 然后回车！完美！！！
+
+
+
+===========================================================================================================================================================
+

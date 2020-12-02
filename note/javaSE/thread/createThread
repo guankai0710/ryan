@@ -1,0 +1,93 @@
+最近新进一家公司，源码里多处使用了多线程，才发现自己之前CRUD的过火，欠缺实在太多了，补补课吧！
+这里记录一下Java创建线程池的一些方式！
+
+
+
+Java在Executors类中提供了一下5中线程池创建方式：
+1、  newCachedThreadPool()   //创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。
+2、  newFixedThreadPool(int nThreads)    //创建一个指定长线程池，可控制线程最大并发数，超出的线程会在队列中等待。
+3、  newScheduledThreadPool(int corePoolSize)    //创建一个指定长线程池，可控制线程最大并发数，超出的线程会在队列中等待，支持定时及周期性任务执行。
+4、  newSingleThreadExecutor()   //创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。
+5、  newSingleThreadScheduledExecutor()  //创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，可以调度命令在给定的延迟之后运行，或定期执行。
+
+
+但是！！！阿里不建议使用以上方式创建线程池啊！！！
+Executors各个方法的弊端：
+1）newFixedThreadPool(int nThreads)和newSingleThreadExecutor():
+  主要问题是堆积的请求处理队列可能会耗费非常大的内存，甚至OOM。
+2）newCachedThreadPool()和newScheduledThreadPool(int corePoolSize):
+  主要问题是线程数最大数是Integer.MAX_VALUE，可能会创建数量非常多的线程，甚至OOM。
+
+因此阿里建议的是使用ThreadPoolExecutor类、ScheduledThreadPoolExecutor类手动创建线程池，根据实际需要定制。
+说明一下：
+1、ThreadPoolExecutor类
+    1）
+        /**
+         * 创建一个新的 ThreadPoolExecutor与给定的初始参数和默认线程工厂和拒绝执行处理程序。
+         * @param corePoolSize 核心线程数
+         * @param maximumPoolSize 最大线程数
+         * @param keepAliveTime 线程空闲时间
+         * @param unit 表示keepAliveTime的单位
+         * @param workQueue 用于缓存任务的阻塞队列
+         *              在线程池中常用的阻塞队列有以下2种
+         *                  SynchronousQueue<Runnable>：此队列中不缓存任何一个任务。向线程池提交任务时，如果没有空闲线程来运行任务，则入列操作会阻塞。
+         *                                              当有线程来获取任务时，出列操作会唤醒执行入列操作的线程。
+         *                                              从这个特性来看，SynchronousQueue是一个无界队列，因此当使用SynchronousQueue作为线程池的阻塞队列时，参数maximumPoolSizes没有任何作用。
+         *                  LinkedBlockingQueue<Runnable>：顾名思义是用链表实现的队列，可以是有界的，也可以是无界的，但在Executors中默认使用无界的。
+         */
+        new ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
+
+    2）
+        /**
+         * 创建一个新的 ThreadPoolExecutor与给定的初始参数和默认线程工厂。
+         * @param handler 表示当workQueue已满，且池中的线程数达到maximumPoolSize时，线程池拒绝添加新任务时采取的策略
+         *              handler一般可以采取以下四种取值
+         *                  ThreadPoolExecutor.AbortPolicy()   //抛出RejectedExecutionException异常
+         *                  ThreadPoolExecutor.CallerRunsPolicy()  //由向线程池提交任务的线程来执行该任务
+         *                  ThreadPoolExecutor.DiscardOldestPolicy()   //抛弃最旧的任务（最先提交而没有得到执行的任务）
+         *                  ThreadPoolExecutor.DiscardPolicy() //抛弃当前的任务
+         */
+        new ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, RejectedExecutionHandler handler)
+
+    3）
+        /**
+         * 创建一个新的 ThreadPoolExecutor与给定的初始参数和默认拒绝执行处理程序。
+         * @param threadFactory 指定创建线程的工厂
+         */
+        new ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory)
+
+    4）
+        /**
+         * 创建一个新 ThreadPoolExecutor给定的初始参数。
+         */
+        new ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler)
+
+2、ScheduledThreadPoolExecutor类
+    说明：ScheduledThreadPoolExecutor类继承于ThreadPoolExecutor类，可以用来在给定延时后执行异步任务或者周期性执行任务。
+
+    1）
+        /**
+         * 创建一个新的 ScheduledThreadPoolExecutor与给定的核心池大小。
+         * @param corePoolSize 核心线程数
+         */
+        new ScheduledThreadPoolExecutor(int corePoolSize)
+
+    2）
+        /**
+         * 创建一个新的 ScheduledThreadPoolExecutor与给定的初始参数。
+         * @param corePoolSize 核心线程数
+         * @param threadFactory 指定创建线程的工厂
+         */
+        new ScheduledThreadPoolExecutor(int corePoolSize, ThreadFactory threadFactory)
+
+    3）
+        /**
+         * 使用给定的初始参数创建一个新的ScheduledThreadPoolExecutor。
+         * @param corePoolSize 核心线程数
+         * @param handler 执行被阻止时使用的处理程序，因为达到线程限制和队列容量
+         */
+        new ScheduledThreadPoolExecutor(int corePoolSize, ThreadFactory threadFactory, RejectedExecutionHandler handler)
+
+3、ThreadPoolTaskExecutor类（由spring封装提供的）
+
+
