@@ -43,6 +43,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- springboot aop 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <version>2.1.8.RELEASE</version>
+        </dependency>
+
         <!-- 阿里json工具包 -->
         <dependency>
             <groupId>com.alibaba</groupId>

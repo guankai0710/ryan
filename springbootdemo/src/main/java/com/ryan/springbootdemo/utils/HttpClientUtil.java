@@ -274,13 +274,17 @@ public class HttpClientUtil {
      *
      * @param url 地址
      * @param param 参数
+     * @param authorizationBearer 请求头的token，没有给 null 值
      * @return
      */
-    public static Map<String,Object> httpPostJson(String url, String param) {
+    public static Map<String,Object> httpPostJson(String url, String param, String authorizationBearer) {
         try {
             HttpPost httpPost = new HttpPost(url);
             // 设置请求头
             httpPost.addHeader("Content-Type", "application/json; charset=UTF-8");
+            if (authorizationBearer != null && authorizationBearer.trim().length() != 0){
+                httpPost.addHeader("Authorization", "Bearer " + authorizationBearer);
+            }
             // 设置请求参数
             httpPost.setEntity(new StringEntity(param, StandardCharsets.UTF_8.name()));
 
@@ -297,9 +301,10 @@ public class HttpClientUtil {
      *
      * @param url 地址
      * @param params 参数
+     * @param authorizationBearer 请求头的token，没有给 null 值
      * @return
      */
-    public static Map<String,Object> httpPostXwwwform(String url, Map<String, Object> params) {
+    public static Map<String,Object> httpPostXwwwform(String url, Map<String, Object> params, String authorizationBearer) {
         try {
             // 转换请求参数
             List<NameValuePair> pairs = covertParams2NVPS(params);
@@ -309,6 +314,9 @@ public class HttpClientUtil {
             httpPost.setEntity(new UrlEncodedFormEntity(pairs, StandardCharsets.UTF_8.name()));
             // 设置请求头
             httpPost.setHeader("Content-type", "application/x-www-form-urlencoded");
+            if (authorizationBearer != null && authorizationBearer.trim().length() != 0){
+                httpPost.addHeader("Authorization", "Bearer " + authorizationBearer);
+            }
 
             Map<String,Object> resultMap = JSON.parseObject(doHttp(httpPost),Map.class);
             return resultMap;
@@ -324,11 +332,16 @@ public class HttpClientUtil {
      * @param url 地址
      * @param params 参数
      * @param files 文件，没有给 null 值
+     * @param authorizationBearer 请求头的token，没有给 null 值
      * @return
      */
-    public static Map<String,Object> httpPostFormdata(String url, Map<String, Object> params, Map<String, File> files) {
+    public static Map<String,Object> httpPostFormdata(String url, Map<String, Object> params, Map<String, File> files, String authorizationBearer) {
         try {
             HttpPost httpPost = new HttpPost(url);
+
+            if (authorizationBearer != null && authorizationBearer.trim().length() != 0){
+                httpPost.addHeader("Authorization", "Bearer " + authorizationBearer);
+            }
 
             // 设置请求参数
             Map<String, ContentBody> reqParam = new HashMap<>(16);
