@@ -64,9 +64,9 @@ public class SocketServer implements Runnable {
                 try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream(), DEFULT_ENCODING))) {
                     if (StringUtils.isNotBlank(reqCode)){
                         for (InterfaceCode interfaceCode : InterfaceCode.values()) {
-                            if (interfaceCode.reqCode.equals(Integer.parseInt(reqCode))){
-                                Class<?> aClass = Class.forName(interfaceCode.className);
-                                response = aClass.getMethod("execute", String.class).invoke(aClass.newInstance(), reqStr).toString();
+                            if (interfaceCode.getReqCode().equals(Integer.parseInt(reqCode))){
+                                Class<?> aClass = Class.forName(interfaceCode.getClassName());
+                                response = aClass.getMethod("execute", String.class).invoke(aClass.getDeclaredConstructor().newInstance(), reqStr).toString();
                                 break;
                             }
                         }
